@@ -1,6 +1,7 @@
 {
   "name": "pdf-explorer",
   "version": "1.0.0",
+  "homepage": "/pdfviewer/",
   "description": "Web application for browsing and viewing PDF files in hierarchical folder structure",
   "main": "server/index.js",
   "scripts": {

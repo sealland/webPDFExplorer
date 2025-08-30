@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
+const router = express.Router();
 const PORT = process.env.PORT || 5028;
 
 // Debug: แสดง environment variables
@@ -42,13 +43,13 @@ console.log('====================');
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3028', 'http://localhost:5028'],
+  origin: ['http://localhost:3028', 'http://localhost:5028' , 'https://whs.zubbsteel.com'],
   credentials: true
 }));
 app.use(express.json());
 
 // Serve PDF files
-app.use('/pdfs', express.static(PDF_BASE_PATH));
+router.use('/pdfs', express.static(PDF_BASE_PATH));
 
 // Serve static files from React build
 const buildPath = path.join(__dirname, '../client/build');
@@ -56,12 +57,12 @@ console.log('Build path:', buildPath);
 console.log('Build path exists:', fs.existsSync(buildPath));
 console.log('Index.html exists:', fs.existsSync(path.join(buildPath, 'index.html')));
 
-app.use(express.static(buildPath));
+router.use(express.static(buildPath));
 
 // API Routes
 
 // Get folder structure - เฉพาะปีปัจจุบัน
-app.get('/api/folders', (req, res) => {
+router.get('/api/folders', (req, res) => {
   try {
     const pdfsPath = PDF_CURRENT_YEAR_PATH;
     
@@ -146,7 +147,7 @@ app.get('/api/folders', (req, res) => {
 });
 
 // Get all years
-app.get('/api/years', (req, res) => {
+router.get('/api/years', (req, res) => {
   try {
     const years = fs.readdirSync(PDF_BASE_PATH)
       .filter(item => {
@@ -163,7 +164,7 @@ app.get('/api/years', (req, res) => {
 });
 
 // Get folder structure for specific year
-app.get('/api/folders/:year', (req, res) => {
+router.get('/api/folders/:year', (req, res) => {
   try {
     const year = req.params.year;
     const yearPath = path.join(PDF_BASE_PATH, year);
@@ -229,7 +230,7 @@ app.get('/api/folders/:year', (req, res) => {
 });
 
 // Get file info
-app.get('/api/file/:filePath(*)', (req, res) => {
+router.get('/api/file/:filePath(*)', (req, res) => {
   try {
     const filePath = decodeURIComponent(req.params.filePath);
     const fullPath = path.join(PDF_BASE_PATH, filePath);
@@ -253,7 +254,7 @@ app.get('/api/file/:filePath(*)', (req, res) => {
 });
 
 // Serve index.html for all routes (SPA) - ต้องอยู่หลัง API routes
-app.get('*', (req, res) => {
+router.get('*', (req, res) => {
   const indexPath = path.join(buildPath, 'index.html');
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
@@ -261,6 +262,8 @@ app.get('*', (req, res) => {
     res.status(404).send('React app not built. Please run "npm run build" first.');
   }
 });
+
+app.use('/pdfviewer', router);
 
 // Start server
 app.listen(PORT, () => {

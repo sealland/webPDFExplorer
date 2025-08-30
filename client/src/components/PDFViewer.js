@@ -64,7 +64,7 @@ const PDFViewer = ({ selectedFile }) => {
       setLoading(true);
       setError(null);
       
-      const url = `/pdfs/${file.path}`;
+      const url = `${process.env.PUBLIC_URL}/pdfs/${file.path}`;
       const loadingTask = pdfjsLib.getDocument(url);
       const pdf = await loadingTask.promise;
       
@@ -133,7 +133,7 @@ const PDFViewer = ({ selectedFile }) => {
   const handleDownload = () => {
     if (selectedFile) {
       const link = document.createElement('a');
-      link.href = `/pdfs/${selectedFile.path}`;
+      link.href = `${process.env.PUBLIC_URL}/pdfs/${selectedFile.path}`;
       link.download = selectedFile.name;
       link.click();
       showSnackbar('Download started');
@@ -165,7 +165,7 @@ const PDFViewer = ({ selectedFile }) => {
 
   const handleOpenInNewTab = () => {
     if (selectedFile) {
-      window.open(`/pdfs/${selectedFile.path}`, '_blank');
+      window.open(`${process.env.PUBLIC_URL}/pdfs/${selectedFile.path}`, '_blank');
     }
   };
 

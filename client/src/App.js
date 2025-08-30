@@ -43,7 +43,7 @@ function App() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/folders');
+      const response = await fetch(`${process.env.PUBLIC_URL}/api/folders`);
       if (!response.ok) {
         throw new Error('Failed to fetch folder structure');
       }
